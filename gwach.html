@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Special Question</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #004d40 0%, #01579b 100%);
+            overflow: hidden;
+            color: white;
+            /* Improves mobile tap responsiveness */
+            touch-action: manipulation;
+        }
+
+        .container { 
+            text-align: center; 
+            z-index: 10; 
+            position: relative;
+            padding: 20px;
+            width: 90%;
+        }
+
+        /* Scalable title for mobile */
+        h1 { 
+            font-size: clamp(2rem, 8vw, 3rem); 
+            margin-bottom: 30px; 
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3); 
+        }
+
+        .btn-group { 
+            display: flex; 
+            gap: 20px; 
+            justify-content: center;
+            flex-wrap: wrap; 
+        }
+
+        button {
+            padding: 15px 45px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        #yesBtn { background-color: #4fc3f7; color: #01579b; }
+        #yesBtn:hover { transform: scale(1.1); background-color: #81d4fa; }
+
+        #noBtn { background-color: #81c784; color: #1b5e20; }
+        #noBtn:hover { background-color: #a5d6a7; }
+
+        /* Lily Section */
+        #lilyWrapper { 
+            display: none; 
+            flex-direction: column; 
+            align-items: center; 
+            z-index: 20; 
+        }
+
+        #lily {
+            width: 70vw;
+            max-width: 280px;
+            cursor: pointer;
+            animation: lilyPulse 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes lilyPulse {
+            from { filter: drop-shadow(0 0 10px #e0f2f1) drop-shadow(0 0 20px #4db6ac); transform: scale(1); }
+            to { filter: drop-shadow(0 0 30px #e1f5fe) drop-shadow(0 0 50px #03a9f4); transform: scale(1.05); }
+        }
+
+        /* Popups / Modals */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            z-index: 100;
+            text-align: center;
+            color: #333;
+            width: 80%;
+            max-width: 400px;
+        }
+
+        .modal img {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,20,40,0.7);
+            backdrop-filter: blur(10px);
+            z-index: 50;
+        }
+
+        /* Play Button in Modal */
+        .play-btn {
+            background: #2e7d32;
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 50%;
+            width: 80px;
+            height: 80px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: transform 0.2s;
+            -webkit-tap-highlight-color: transparent;
+        }
+        .play-btn:hover { transform: scale(1.1); background: #1b5e20; }
+
+        .close-link {
+            display: block;
+            margin-top: 20px;
+            color: #666;
+            text-decoration: underline;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+
+        /* Floating Leaves */
+        .leaf {
+            position: absolute; 
+            width: 40px; 
+            height: 20px; 
+            background: #81c784;
+            border-radius: 0 100% 0 100%; 
+            opacity: 0.3; 
+            bottom: -50px;
+            animation: drift 12s infinite linear; 
+            z-index: 1;
+        }
+
+        @keyframes drift {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="secretAudio">
+        <source src="love.mp3" type="audio/mpeg">
+    </audio>
+
+    <div class="container" id="questionSection">
+        <h1>Do you love me?</h1>
+        <div class="btn-group">
+            <button id="yesBtn" onclick="revealLily()">Yes</button>
+            <button id="noBtn" onclick="showNoImage()">No</button>
+        </div>
+    </div>
+
+    <div id="lilyWrapper">
+        <div style="font-weight:bold; margin-bottom:15px; font-size: 1.2rem; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Tap the lily ✨</div>
+        <img id="lily" src="lily.png" alt="Lily" onclick="openAudioPopup()">
+    </div>
+
+    <div id="overlay" class="overlay" onclick="closeAll()"></div>
+
+    <div id="noPopup" class="modal">
+        <img src="cat.jpg" alt="No">
+        <br>
+        <button onclick="closeAll()" style="margin-top:20px; padding:12px 25px; cursor:pointer; border-radius: 10px; border:none; background:#eee; font-weight: bold; color: #333;">Try again?</button>
+    </div>
+
+    <div id="audioPopup" class="modal">
+        <h2 style="color: #01579b; margin-top:0;">For You</h2>
+        <p>Press play to listen</p>
+        <button class="play-btn" onclick="toggleAudio()" id="playIcon">▶</button>
+        <span class="close-link" onclick="closeAll()">Close</span>
+    </div>
+
+    <script>
+        // Floating leaves logic
+        for (let i = 0; i < 15; i++) {
+            let leaf = document.createElement('div');
+            leaf.className = 'leaf';
+            leaf.style.left = Math.random() * 100 + 'vw';
+            leaf.style.animationDuration = (Math.random() * 5 + 8) + 's';
+            leaf.style.animationDelay = Math.random() * 10 + 's';
+            document.body.appendChild(leaf);
+        }
+
+        const audio = document.getElementById('secretAudio');
+        const playIcon = document.getElementById('playIcon');
+
+        function revealLily() {
+            document.getElementById('questionSection').style.display = 'none';
+            document.getElementById('lilyWrapper').style.display = 'flex';
+        }
+
+        function showNoImage() {
+            document.getElementById('noPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function openAudioPopup() {
+            document.getElementById('audioPopup').style.display = 'block';
+            document.getElementById('overlay').style.display = 'block';
+        }
+
+        function toggleAudio() {
+            if (audio.paused) {
+                audio.play();
+                playIcon.innerText = "⏸";
+            } else {
+                audio.pause();
+                playIcon.innerText = "▶";
+            }
+        }
+
+        function closeAll() {
+            document.getElementById('noPopup').style.display = 'none';
+            document.getElementById('audioPopup').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+            audio.pause(); 
+            playIcon.innerText = "▶";
+        }
+    </script>
+</body>
+</html>
