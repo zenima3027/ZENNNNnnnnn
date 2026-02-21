@@ -165,13 +165,16 @@
 
 <div class="container" id="questionSection">
     <h1>Do you love me?</h1>
-    <div class="btn-group">
+    <div class="btn-group" style="align-items: center;">
         <button id="yesBtn" onclick="revealLily()">Yes</button>
-        <button id="noBtn" onclick="showNoImage()">No</button>
+        
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <button id="noBtn" onclick="showNoImage()">No</button>
+            <span style="font-size: 0.8rem; opacity: 0.8; font-style: italic; white-space: nowrap;">
+                try nd press this🤪🤪
+            </span>
+        </div>
     </div>
-    <p style="font-size: 0.8rem; margin-top: 15px; opacity: 0.8; font-style: italic;">
-        try nd press this🤪🤪
-    </p>
 </div>
 
     <div id="lilyWrapper">
@@ -244,4 +247,5 @@
 </body>
 
 </html>
+
 
